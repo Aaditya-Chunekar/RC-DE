@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <style>
+      #chart_div { 
+        width: 800px;
+        height: 500px;
+      }
+      tr,td{
+          border:2px solid black;
+      }
+      body
+      { 
+        display: inline-grid;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Real-time Voltage drop across capacitor while charging versus time graph and table in RC circuits using differential equations with Google Charts Javascript Library</h1>
+    <p>Here E=100 Volts, R=25 Ohms and C=25 Farad</p>
+    <!-- CONTAINER FOR CHART -->
+    <div id="chart_div"></div>
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script>
+      // load current chart package
+      google.charts.load('current', {
+        packages: ['corechart', 'line'],
+      });
+
+      // set callback function when api loaded
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        // create data object with default value
+        let data = google.visualization.arrayToDataTable([
+          ['Time', 'Voltage Drop Across Capacitor'],
+          [0, 0],
+        ]);
+
+        // create options object with titles, colors, etc.
+        let options = {
+          title: 'Voltage Drop Across Capacitor versus Time while charging',
+          hAxis: {
+            title:'Time (in Seconds)',
+            //textPosition: 'none',
+          },
+          vAxis: {
+            title: 'Voltage Drop Across Capacitor (In Volts) while charging',
+          },
+        };
+        const volt=document.getElementById('vc');
+        const t=document.getElementById('time');
+        // draw chart on load
+        let chart = new google.visualization.LineChart(
+          document.getElementById('chart_div')
+        );
+        chart.draw(data, options);
+
+        // max amount of data rows that should be displayed
+        //-- let maxDatas = 100;//need to understand
+        let E=100;
+        let r=25;
+        let c=25;
+        // interval for adding new data every 250ms
+        let index = 0;
+        var MyGraph = setInterval(function () {
+          // instead of this random, you can make an ajax call for the current cpu usage or what ever data you want to display
+          let Vc = E*(1-Math.pow(2.718,-index*100/(r*c)));//
+
+         //-- if (data.getNumberOfRows() > maxDatas) {
+         //-- data.removeRows(0, data.getNumberOfRows() - maxDatas);
+         //-- }
+
+          data.addRow([index*0.4, Vc]);//adding units?  also show time
+          t.innerHTML=index*0.4;
+          volt.innerHTML=Vc;
+          chart.draw(data, options);
+          if(index==50)
+          {
+            clearInterval(MyGraph);
+          }
+          index++;
+        }, 400);//400
+      }
+    </script>
+    <table style="font-size:20x;">
+      <tr>
+        <td>Voltage Drop Across Capacitor(in Volts)</td>
+        <td>Time(in Seconds)</td>
+      </tr>
+      <tr>
+        <td id="vc">0</td>
+        <td id="time">0</td>
+      </tr>
+    </table>
+  </body>
+</html>
